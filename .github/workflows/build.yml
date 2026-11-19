@@ -25,5 +25,8 @@ jobs:
       - name: Create release with binary
         uses: softprops/action-gh-release@v2
         with:
-          files: RuLolBypass.exe
+          files: |
+            RuLolBypass.exe
+            riot_hosts.txt
+            cloudflare_ips.txt
           generate_release_notes: true

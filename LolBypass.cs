@@ -5,6 +5,8 @@
 //  домен мёртв напрямую, пининг на живой IP из резервных диапазонов
 //  Cloudflare (108.162.192.0/18, 190.93.240.0/20, 198.41.128.0/17) в файл
 //  %SystemRoot%\System32\drivers\etc\hosts.
+//  Списки доменов и IP берутся из riot_hosts.txt и cloudflare_ips.txt рядом
+//  с exe (если файлов нет — используются встроенные значения).
 //
 //  Сборка: build.bat (csc.exe из .NET Framework v4.0.30319).
 //  Язык: C# 5.0 — без синтаксиса C#6+ (без $"", ?., nameof и т.п.).
@@ -73,48 +75,10 @@ namespace LolBypass
         private const int TlsTimeoutMs = 4000;
 
         // ------------------------- Реестр хостов -------------------------------
-        private static readonly HostEntry[] HostRegistry = new HostEntry[]
-        {
-            // Критичные (вход/логин/клиент)
-            new HostEntry("clientconfig.rpg.riotgames.com", true),
-            new HostEntry("authenticate.riotgames.com", true),
-            new HostEntry("auth.riotgames.com", true),
-            new HostEntry("account.riotgames.com", true),
-            new HostEntry("entitlements.auth.riotgames.com", true),
-            new HostEntry("data.riotgames.com", true),
-            new HostEntry("riot-geo.pas.si.riotgames.com", true),
-            new HostEntry("riot-geo.mps.si.riotgames.com", true),
-            new HostEntry("content.publishing.riotgames.com", true),
-            new HostEntry("eu.edge.rms.si.riotgames.com", true),
-            new HostEntry("login.leagueoflegends.com", true),
-            // Дополнительные (клиент игры, сайты, статистика) — сбой не критичен
-            new HostEntry("lol.secure.dyn.riotcdn.net", false),
-            new HostEntry("lol.dyn.riotcdn.net", false),
-            new HostEntry("teamfighttactics.secure.dyn.riotcdn.net", false),
-            new HostEntry("riot-client.secure.dyn.riotcdn.net", false),
-            new HostEntry("riot-client.dyn.riotcdn.net", false),
-            new HostEntry("ks-foundation.secure.dyn.riotcdn.net", false),
-            new HostEntry("bacon.secure.dyn.riotcdn.net", false),
-            new HostEntry("ritoplus.secure.dyn.riotcdn.net", false),
-            new HostEntry("www.leagueoflegends.com", false),
-            new HostEntry("ddragon.leagueoflegends.com", false),
-            new HostEntry("status.riotgames.com", false),
-            new HostEntry("support.riotgames.com", false),
-            new HostEntry("signup.id.riotgames.com", false),
-            new HostEntry("porofessor.gg", false),
-            new HostEntry("leagueofgraphs.com", false)
-        };
+        private static HostEntry[] HostRegistry = DefaultHostRegistry();
 
         // ------------------- Пул резервных IP Cloudflare -----------------------
-        private static readonly string[] CfBackupPool = new string[]
-        {
-            "108.162.192.96", "108.162.192.100", "108.162.192.101", "108.162.192.102", "108.162.192.103",
-            "108.162.192.104", "108.162.192.110", "108.162.192.115", "108.162.192.120", "108.162.192.125",
-            "190.93.240.96", "190.93.241.96", "190.93.242.96", "190.93.243.96", "190.93.244.96",
-            "190.93.245.96", "190.93.246.96", "190.93.246.100", "190.93.247.96", "190.93.247.100",
-            "198.41.128.96", "198.41.160.96", "198.41.176.96", "198.41.192.96", "198.41.192.100",
-            "198.41.200.96", "198.41.224.96", "198.41.240.96"
-        };
+        private static string[] CfBackupPool = DefaultCfPool();
 
         // Диагностика чата (не чинится через hosts)
         private static readonly string[] ChatHosts = new string[]
@@ -127,6 +91,180 @@ namespace LolBypass
         private static string LogPath = "";
         private static bool ScanMode;
 
+        // ===================================================================
+        //  Редактируемые конфиги рядом с exe (фолбэк — встроенные значения)
+        // ===================================================================
+        private static HostEntry[] DefaultHostRegistry()
+        {
+            return new HostEntry[]
+            {
+                // Критичные (вход/логин/клиент)
+                new HostEntry("clientconfig.rpg.riotgames.com", true),
+                new HostEntry("authenticate.riotgames.com", true),
+                new HostEntry("auth.riotgames.com", true),
+                new HostEntry("account.riotgames.com", true),
+                new HostEntry("entitlements.auth.riotgames.com", true),
+                new HostEntry("data.riotgames.com", true),
+                new HostEntry("riot-geo.pas.si.riotgames.com", true),
+                new HostEntry("riot-geo.mps.si.riotgames.com", true),
+                new HostEntry("content.publishing.riotgames.com", true),
+                new HostEntry("eu.edge.rms.si.riotgames.com", true),
+                new HostEntry("login.leagueoflegends.com", true),
+                // Дополнительные (клиент игры, сайты, статистика) — сбой не критичен
+                new HostEntry("lol.secure.dyn.riotcdn.net", false),
+                new HostEntry("lol.dyn.riotcdn.net", false),
+                new HostEntry("teamfighttactics.secure.dyn.riotcdn.net", false),
+                new HostEntry("riot-client.secure.dyn.riotcdn.net", false),
+                new HostEntry("riot-client.dyn.riotcdn.net", false),
+                new HostEntry("ks-foundation.secure.dyn.riotcdn.net", false),
+                new HostEntry("bacon.secure.dyn.riotcdn.net", false),
+                new HostEntry("ritoplus.secure.dyn.riotcdn.net", false),
+                new HostEntry("www.leagueoflegends.com", false),
+                new HostEntry("ddragon.leagueoflegends.com", false),
+                new HostEntry("status.riotgames.com", false),
+                new HostEntry("support.riotgames.com", false),
+                new HostEntry("signup.id.riotgames.com", false),
+                new HostEntry("porofessor.gg", false),
+                new HostEntry("leagueofgraphs.com", false)
+            };
+        }
+
+        private static string[] DefaultCfPool()
+        {
+            return new string[]
+            {
+                "108.162.192.96", "108.162.192.100", "108.162.192.101", "108.162.192.102", "108.162.192.103",
+                "108.162.192.104", "108.162.192.110", "108.162.192.115", "108.162.192.120", "108.162.192.125",
+                "190.93.240.96", "190.93.241.96", "190.93.242.96", "190.93.243.96", "190.93.244.96",
+                "190.93.245.96", "190.93.246.96", "190.93.246.100", "190.93.247.96", "190.93.247.100",
+                "198.41.128.96", "198.41.160.96", "198.41.176.96", "198.41.192.96", "198.41.192.100",
+                "198.41.200.96", "198.41.224.96", "198.41.240.96"
+            };
+        }
+
+        private static HostEntry[] LoadHostRegistry()
+        {
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "riot_hosts.txt");
+            if (!File.Exists(path))
+            {
+                Log("Реестр хостов: riot_hosts.txt не найден — встроенный список (26)");
+                return DefaultHostRegistry();
+            }
+            try
+            {
+                string[] lines = File.ReadAllLines(path, Encoding.UTF8);
+                List<HostEntry> list = new List<HostEntry>();
+                HashSet<string> seen = new HashSet<string>(StringComparer.Ordinal);
+                int valid = 0;
+                int criticalCount = 0;
+                foreach (string raw in lines)
+                {
+                    string line = (raw ?? "").Trim();
+                    if (line.Length == 0 || line.StartsWith("#")) continue;
+
+                    string[] tokens = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                    string host = tokens[0].ToLowerInvariant();
+                    IPAddress asIp;
+                    bool hostOk = !IPAddress.TryParse(host, out asIp)
+                        && host.IndexOf('.') >= 0
+                        && HasAllowedHostChars(host);
+                    bool critical = false;
+                    if (tokens.Length == 1)
+                    {
+                        critical = false;
+                    }
+                    else if (tokens.Length == 2 && string.Equals(tokens[1], "critical", StringComparison.OrdinalIgnoreCase))
+                    {
+                        critical = true;
+                    }
+                    else
+                    {
+                        hostOk = false;
+                    }
+
+                    if (!hostOk)
+                    {
+                        LogFileOnly("WARN: riot_hosts.txt — строка пропущена: " + raw);
+                        continue;
+                    }
+                    if (!seen.Add(host)) continue; // дубликат — первый выигрывает
+
+                    list.Add(new HostEntry(host, critical));
+                    valid++;
+                    if (critical) criticalCount++;
+                }
+
+                if (valid == 0)
+                {
+                    Log("WARN: Реестр хостов: riot_hosts.txt есть, но валидных записей нет — встроенный список (26)");
+                    return DefaultHostRegistry();
+                }
+                Log(string.Format("Реестр хостов: riot_hosts.txt ({0} записей, критичных: {1})", valid, criticalCount));
+                return list.ToArray();
+            }
+            catch (Exception ex)
+            {
+                Log("WARN: Реестр хостов: не удалось прочитать riot_hosts.txt (" + ex.Message + ") — встроенный список (26)");
+                return DefaultHostRegistry();
+            }
+        }
+
+        private static bool HasAllowedHostChars(string host)
+        {
+            foreach (char c in host)
+            {
+                bool ok = (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-' || c == '.';
+                if (!ok) return false;
+            }
+            return true;
+        }
+
+        private static string[] LoadCfPool()
+        {
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cloudflare_ips.txt");
+            if (!File.Exists(path))
+            {
+                Log("Пул Cloudflare: cloudflare_ips.txt не найден — встроенный список (28)");
+                return DefaultCfPool();
+            }
+            try
+            {
+                string[] lines = File.ReadAllLines(path, Encoding.UTF8);
+                List<string> list = new List<string>();
+                HashSet<string> seen = new HashSet<string>(StringComparer.Ordinal);
+                int valid = 0;
+                foreach (string raw in lines)
+                {
+                    string line = (raw ?? "").Trim();
+                    if (line.Length == 0 || line.StartsWith("#")) continue;
+
+                    IPAddress ip;
+                    if (!IPAddress.TryParse(line, out ip) || ip.AddressFamily != AddressFamily.InterNetwork)
+                    {
+                        LogFileOnly("WARN: cloudflare_ips.txt — строка пропущена: " + raw);
+                        continue;
+                    }
+                    if (!seen.Add(line)) continue; // дубликат — первый выигрывает
+
+                    list.Add(line);
+                    valid++;
+                }
+
+                if (valid == 0)
+                {
+                    Log("WARN: Пул Cloudflare: cloudflare_ips.txt есть, но валидных IP нет — встроенный список (28)");
+                    return DefaultCfPool();
+                }
+                Log(string.Format("Пул Cloudflare: cloudflare_ips.txt ({0} IP)", valid));
+                return list.ToArray();
+            }
+            catch (Exception ex)
+            {
+                Log("WARN: Пул Cloudflare: не удалось прочитать cloudflare_ips.txt (" + ex.Message + ") — встроенный список (28)");
+                return DefaultCfPool();
+            }
+        }
+
         private static int Main(string[] args)
         {
             LogPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "lolbypass.log");
@@ -134,6 +272,10 @@ namespace LolBypass
             catch (Exception ex) { LogFileOnly("WARN: не удалось установить UTF-8 для консоли: " + ex.Message); }
             try { ThreadPool.SetMinThreads(1024, 1024); }
             catch (Exception ex) { LogFileOnly("WARN: SetMinThreads: " + ex.Message); }
+
+            // Редактируемые конфиги рядом с exe (фолбэк — встроенные списки).
+            HostRegistry = LoadHostRegistry();
+            CfBackupPool = LoadCfPool();
 
             ScanMode = false;
             if (args != null)

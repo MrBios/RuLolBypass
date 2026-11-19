@@ -1,0 +1,32 @@
+# Riot Games — список доменов для проверки/обхода блокировок.
+# Формат: одна запись на строку — «хост» или «хост critical».
+# Слово critical = домен, критичный для входа (сбой ломает авторизацию/клиент).
+# Файл читается exe при запуске; если файла нет или в нём нет валидных строк —
+# используется встроенный список. Пустые строки и строки с # игнорируются.
+clientconfig.rpg.riotgames.com critical
+authenticate.riotgames.com critical
+auth.riotgames.com critical
+account.riotgames.com critical
+entitlements.auth.riotgames.com critical
+data.riotgames.com critical
+riot-geo.pas.si.riotgames.com critical
+riot-geo.mps.si.riotgames.com critical
+content.publishing.riotgames.com critical
+eu.edge.rms.si.riotgames.com critical
+login.leagueoflegends.com critical
+# Дополнительные (клиент игры, сайты, статистика) — сбой не критичен
+lol.secure.dyn.riotcdn.net
+lol.dyn.riotcdn.net
+teamfighttactics.secure.dyn.riotcdn.net
+riot-client.secure.dyn.riotcdn.net
+riot-client.dyn.riotcdn.net
+ks-foundation.secure.dyn.riotcdn.net
+bacon.secure.dyn.riotcdn.net
+ritoplus.secure.dyn.riotcdn.net
+www.leagueoflegends.com
+ddragon.leagueoflegends.com
+status.riotgames.com
+support.riotgames.com
+signup.id.riotgames.com
+porofessor.gg
+leagueofgraphs.com
