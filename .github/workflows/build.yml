@@ -1,0 +1,29 @@
+name: Build and Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build with csc (.NET Framework)
+        shell: powershell
+        run: |
+          $csc = 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe'
+          & $csc /target:exe /out:RuLolBypass.exe /codepage:65001 /r:System.dll LolBypass.cs
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          Get-Item RuLolBypass.exe
+
+      - name: Create release with binary
+        uses: softprops/action-gh-release@v2
+        with:
+          files: RuLolBypass.exe
+          generate_release_notes: true
