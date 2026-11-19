@@ -2,3 +2,5 @@
 *.bak
 obj/
 bin/
+PROJECT.md
+CURRENT.md
